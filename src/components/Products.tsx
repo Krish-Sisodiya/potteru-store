@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { motion, useMotionValue, useAnimation, useTransform, useSpring, DragControls } from 'framer-motion';
+import { motion, useMotionValue, useAnimation, useTransform, useSpring, } from 'framer-motion';
 import { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { 
   FaShoppingCart, FaTag, FaStar, FaFire, FaTruck, 
