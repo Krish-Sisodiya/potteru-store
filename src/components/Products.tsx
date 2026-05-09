@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { motion, useMotionValue, useAnimation, useTransform, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useAnimation, useTransform, useSpring, DragControls } from 'framer-motion';
 import { useState, useEffect, useRef, useCallback, memo } from 'react';
 import { 
   FaShoppingCart, FaTag, FaStar, FaFire, FaTruck, 
@@ -343,13 +343,13 @@ const ProductCard = memo(function ProductCard({
   );
 });
 
-// ===================== ✅ INFINITE PRODUCT ROW - COMPLETELY REWRITTEN =====================
+// ===================== ✅ INFINITE PRODUCT ROW - FIXED =====================
 function InfiniteProductRow({ products }: { products: Product[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [itemWidth, setItemWidth] = useState<number>(0);
-  const [containerWidth, setContainerWidth] = useState<number>(0);
   
-  // ✅ FIXED: Use number type explicitly for motion values
+  // ✅ FIXED: Removed unused containerWidth state
+  const [itemWidth, setItemWidth] = useState<number>(0);
+  
   const x = useMotionValue<number>(0);
   const controls = useAnimation();
   
@@ -364,19 +364,16 @@ function InfiniteProductRow({ products }: { products: Product[] }) {
       const firstItem = containerRef.current.firstElementChild as HTMLElement;
       if (!firstItem) return;
       
-      // Get computed gap from container
       const computedStyle = window.getComputedStyle(containerRef.current);
       const gap = parseFloat(computedStyle.gap) || 16;
       
+      // ✅ Only set itemWidth (containerWidth removed)
       setItemWidth(firstItem.offsetWidth + gap);
-      setContainerWidth(containerRef.current.offsetWidth);
     };
 
-    // Initial calc + font load
     updateDimensions();
     document.fonts?.ready?.then(updateDimensions);
     
-    // Resize listener with debounce
     let resizeTimeout: ReturnType<typeof setTimeout>;
     const handleResize = () => {
       clearTimeout(resizeTimeout);
@@ -390,35 +387,27 @@ function InfiniteProductRow({ products }: { products: Product[] }) {
     };
   }, []);
 
-  // Create looped array for seamless infinite scroll (3 copies)
+  // Create looped array for seamless infinite scroll
   const looped = [...products, ...products, ...products];
   const singleSetCount = products.length;
-  
-  // ✅ FIXED: Safe calculation with fallback
   const singleSetWidth = itemWidth > 0 ? itemWidth * singleSetCount : 0;
 
-  // ✅ FIXED: Drag end handler with proper types + seamless loop logic
+  // Drag end handler with seamless loop logic
   const handleDragEnd = useCallback(() => {
     if (singleSetWidth <= 0) return;
     
-    // ✅ FIXED: Explicit number type for motion value
     const currentX: number = x.get();
-    
-    // Find which "virtual set" we're currently in (0, 1, or 2)
     const normalizedPosition = ((-currentX % singleSetWidth) + singleSetWidth) % singleSetWidth;
     const setCurrent = Math.floor(-currentX / singleSetWidth);
     
-    // If we're near the edge of the middle set, seamlessly jump
     const threshold = singleSetWidth * 0.25;
     
     if (normalizedPosition < threshold && setCurrent > 0) {
-      // Jump left: from set 2 → set 1, or set 1 → set 0
       controls.start({
         x: -(setCurrent - 1) * singleSetWidth - normalizedPosition,
-        transition: { duration: 0 } // Instant jump, no animation
+        transition: { duration: 0 }
       });
     } else if (normalizedPosition > singleSetWidth - threshold && setCurrent < 2) {
-      // Jump right: from set 0 → set 1, or set 1 → set 2
       controls.start({
         x: -(setCurrent + 1) * singleSetWidth - normalizedPosition,
         transition: { duration: 0 }
@@ -426,7 +415,7 @@ function InfiniteProductRow({ products }: { products: Product[] }) {
     }
   }, [x, controls, singleSetWidth]);
 
-  // Drag hint animation based on scroll position
+  // Drag hint animation
   const hintOpacity = useTransform(springX, (val: number) => {
     if (singleSetWidth <= 0) return 0.7;
     const progress = Math.abs(val) / singleSetWidth;
@@ -454,7 +443,6 @@ function InfiniteProductRow({ products }: { products: Product[] }) {
           <motion.div
             key={`${product.id}-${idx}`}
             whileHover={{ y: -8, transition: { duration: 0.2 } }}
-            // ✅ Responsive widths: 1 mobile, 2 tablet, 4 desktop
             className="flex-shrink-0 w-[85vw] max-w-[280px] sm:w-[calc(50%-0.5rem)] md:w-[calc(25%-0.75rem)]"
           >
             <ProductCard product={product} variant="scroll" />
@@ -462,7 +450,7 @@ function InfiniteProductRow({ products }: { products: Product[] }) {
         ))}
       </motion.div>
 
-      {/* Subtle Drag Hint (Desktop Only) */}
+      {/* Drag Hint */}
       <motion.div 
         className="hidden md:flex absolute right-28 top-1/2 -translate-y-1/2 items-center gap-2 text-gray-400 text-xs pointer-events-none"
         style={{ opacity: hintOpacity }}
@@ -478,7 +466,7 @@ function InfiniteProductRow({ products }: { products: Product[] }) {
         </motion.span>
       </motion.div>
 
-      {/* Progress Dots Indicator (Desktop) */}
+      {/* Progress Dots */}
       <div className="hidden md:flex justify-center mt-4 gap-1.5" role="tablist" aria-label="Scroll progress">
         {[0, 1, 2].map((setIndex) => {
           const isActive = singleSetWidth > 0 && Math.floor((-x.get() / singleSetWidth) % 3 + 3) % 3 === setIndex;
