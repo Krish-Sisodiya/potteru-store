@@ -210,7 +210,7 @@ image: "/assets/b9.jpeg",
     title: "Artisan Collection Sampler",
     description: "Mini set: 1 bowl + 1 cup + 1 small dish. Try our craft before committing!",
     price: "₹799",
-    image: "s/assets/b8.jpeg",
+    image: "/assets/b8.jpeg",
     amazonLink: "https://www.amazon.in/s?k=ceramic+pottery+gift+set",
     badge: "Starter Kit",
     category: "set"
