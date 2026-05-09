@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+/* Tailwind v4 Theme Setup */
+@theme {
+  --color-pottery-base: #FDF8F3;
+  --color-pottery-clay: #C27B5C;
+  --color-pottery-dark: #2C2420;
+  --color-pottery-accent: #E8B86D;
+  --color-pottery-green: #6B8E5A;
+  
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+}
+
+/* Global Reset */
+body {
+  @apply bg-pottery-base text-pottery-dark antialiased;
+}
+
+
+
+
+
+html { scroll-behavior: smooth; }
+.cursor-grab { cursor: grab; user-select: none; -webkit-user-select: none; }
+.cursor-grab:active { cursor: grabbing; }
+/* Hide native scrollbar but keep functionality */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
