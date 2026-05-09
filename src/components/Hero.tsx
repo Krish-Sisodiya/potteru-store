@@ -262,7 +262,7 @@ export default function Hero() {
               className="relative aspect-[4/3] sm:aspect-[4/5] md:aspect-square rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl sm:shadow-2xl border-2 sm:border-4 border-white bg-gradient-to-br from-pottery-clay/10 to-pottery-accent/10"
             >
               <img 
-                src="/public/assets/b5.jpeg" 
+                src="/assets/b5.jpeg" 
                 alt="Handmade pottery bowl on wooden table" 
                 className="w-full h-full object-cover" 
                 loading="eager" 
